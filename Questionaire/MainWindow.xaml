@@ -1,0 +1,151 @@
+﻿<Window x:Class="Questionaire.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Questionaire"
+        xmlns:viewModels="clr-namespace:Questionaire.ViewModels"
+        xmlns:classes="clr-namespace:Questionaire.Classes"
+        mc:Ignorable="d"
+        Title="Questionaire" Height="Auto" Width="Auto" 
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Window.DataContext>
+
+    <TabControl>
+        <TabItem Header="Students">
+            <TabItem.DataContext>
+                <viewModels:StudentsViewModel />
+            </TabItem.DataContext>
+            <Grid Margin="10 10 10 0">
+                <!--<StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <TextBox Text="{Binding StudentName}"
+                     classes:FocusExtension.IsFocused="{Binding IsStudentEntryFocused}"
+                     Width="200" />
+            <ComboBox ItemsSource="{Binding AvailableTickets}"
+                      SelectedValue="{Binding TicketNumber}"
+                      Margin="10 0 10 0"/>
+            <Button Content="Add Student"
+                    Command="{Binding AddStudentCommand}"
+                    Width="100" />
+        </StackPanel>-->
+                <Grid.ColumnDefinitions>
+                    <!-- Students column -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Questions column -->
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Students -->
+                <Grid Width="200" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="0 0 0 10" Grid.Row="0">
+                        <TextBlock Text="Search"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Margin="0 0 0 5"
+                       Grid.Row="0" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <ListView ItemsSource="{Binding StudentsCollection}"
+                      SelectedItem="{Binding SelectedStudent}"
+                      DisplayMemberPath="Name"
+                      Grid.Row="1" />
+                </Grid>
+
+                <!-- Questions -->
+                <TextBlock Text="{Binding SelectedStudent.Questions}"
+                   FontSize="17"
+                   LineHeight="2"
+                   Margin="20 50 0 0"
+                   Grid.Column="1" />
+            </Grid>
+        </TabItem>
+        <TabItem x:Name="QuestionsTabItem" Header="Questions">
+            <TabItem.DataContext>
+                <viewModels:QuestionsViewModel />
+            </TabItem.DataContext>
+            <Grid Margin="10 10 10 0">
+                <Grid.ColumnDefinitions>
+                    <!-- Questions column -->
+                    <ColumnDefinition MinWidth="450" Width="555" />
+                    <!-- Splitter column -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Students column -->
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Students -->
+                <Grid MinWidth="400" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="0 0 0 10" Grid.Row="0">
+                        <TextBlock Text="Search"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 5"
+                                   Grid.Row="0" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <ListView ItemsSource="{Binding QuestionsCollection}"
+                              SelectedItem="{Binding SelectedQuestion}"
+                              HorizontalContentAlignment="Stretch"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              Grid.Row="1">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Text}"
+                                                           TextWrapping="Wrap"
+                                                           Grid.Column="0" />
+                                                <CheckBox IsChecked="{Binding IsChecked}"
+                                                          Command="{Binding Source={x:Reference QuestionsTabItem}, Path=DataContext.QuestionCheckCommand}"
+                                                          Margin="5 0 0 0"
+                                                          Grid.Column="1" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                </Grid>
+
+                <!-- Splitter -->
+                <GridSplitter Width="5" 
+                              HorizontalAlignment="Stretch" 
+                              Margin="5 0 5 0"
+                              Foreground="DarkGray"
+                              Grid.Column="1" />
+                
+                <!-- Questions -->
+                <ScrollViewer Margin="20 50 0 0"
+                              Grid.Column="2">
+                    <TextBlock Text="{Binding Students}"
+                               FontSize="17"
+                               LineHeight="2" />
+                </ScrollViewer>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
+    
+</Window>
