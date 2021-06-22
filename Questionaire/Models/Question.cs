@@ -8,8 +8,7 @@ namespace Questionaire.Models
 {
     class Question
     {
+        public int Id { get; set; }
         public string Text { get; set; }
-        public string Students { get; set; }
-        public bool IsChecked { get; set; }
     }
 }

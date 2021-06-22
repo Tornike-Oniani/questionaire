@@ -8,7 +8,8 @@ namespace Questionaire.Models
 {
     class Student
     {
+        public int Id { get; set; }
         public string Name { get; set; }
-        public string Questions { get; set; }
+        public List<string> Questions { get; set; }
     }
 }

@@ -8,62 +8,39 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using System.Windows;
+using LiteDB;
 
 namespace Questionaire.Repositories
 {
     class QuestionRepo
     {
-        private string connectionString = $"Data Source={Path.Combine(Environment.CurrentDirectory, "database.db;Version=3;")}";
+        private string connectionString;
 
-        public List<Question> GetQuestions()
+        public QuestionRepo()
         {
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            connectionString =Path.Combine(Environment.CurrentDirectory, "lite.db");
+        }
+
+        public void AddQuestion(string questionText)
+        {
+            using (LiteDatabase db = new LiteDatabase(connectionString))
             {
-                conn.Open();
-                string query = @"
-SELECT q.Question AS 'Text', group_concat(b.Name, char(10)) AS 'Students' FROM
-(SELECT s.Name, t.Id FROM Students AS s
-JOIN Tickets AS t
-EXCEPT
-SELECT s.Name, t.Id FROM Students AS s
-JOIN StudentTicket AS st ON s.Id == st.StudentId
-JOIN Tickets AS t ON st.TicketId == t.Id) AS b
-JOIN Questions AS q ON b.Id = q.TicketId
-GROUP BY q.Question;
-";
-                return conn.Query<Question>(query).ToList();
+                ILiteCollection<Question> col = db.GetCollection<Question>("questions");
+
+                Question question = new Question()
+                {
+                    Text = questionText
+                };
+
+                col.Insert(question);
             }
         }
-        public string GetStudentsWhoHaveNoQuestions(List<string> questions)
+        public List<string> GetQuesitons()
         {
-            if (questions.Count == 0) { return ""; }
-
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            using (LiteDatabase db = new LiteDatabase(connectionString))
             {
-                conn.Open();
-                string query = @"
-SELECT group_concat(f.Name, char(10)) AS 'Students' FROM
-(SELECT b.Name, group_concat(q.Question, ', ') AS 'Questions' FROM
-(SELECT s.Name, t.Id FROM Students AS s
-JOIN Tickets AS t
-EXCEPT
-SELECT s.Name, st.TicketId FROM Students AS s
-JOIN StudentTicket AS st ON s.Id = st.StudentId) AS b
-JOIN Questions AS q ON b.Id = q.TicketId
-GROUP BY b.Name) AS f
-WHERE 
-";
-                for (int i = 0; i < questions.Count; i++)
-                {
-                    query += $"f.Questions LIKE '%{questions[i]}%'";
-
-                    if (i == questions.Count - 1)
-                        query += ";";
-                    else
-                        query += " AND ";
-                }
-
-                return conn.QuerySingleOrDefault<string>(query);
+                ILiteCollection<Question> col = db.GetCollection<Question>("questions");
+                return col.Query().Select(q => q.Text).ToList();
             }
         }
     }
